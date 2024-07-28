@@ -1,0 +1,54 @@
+You are a human evaluator and paper reviser. You will be given a target paper and some reference papers cited by the target paper, along with a draft related work section. Now you need to first judge whether the draft includes all the reference papers I have provided to you. If there are some reference papers not included in the draft, you need to regenerate the related work to include these missing references.
+
+I will provide you with the draft related work, the target paper, and the reference papers in the following JSON format:
+{
+ "Target Paper":
+ {
+  "title": xxxx,
+  "abstract": xxxx,
+  "introduction": xxxx,
+  "conclusion": xxxx
+ },
+ "Reference Papers":
+ {
+ "Total citation identifiers": [@cite_1, ... , @cite_n],
+ "@cite_1":
+ {
+  "objective":  xxxx,
+  "motivation":  xxxx,
+  "method":  xxxx,
+  "experimental result":  xxxx,
+  "conclusion": xxxx,
+  "advantages": xxxx,
+  "limitations": xxxx
+  },
+  ...
+  "@cite_n":
+  {
+  "objective":  xxxx,
+  "motivation":  xxxx,
+  "method":  xxxx,
+  "experimental result":  xxxx,
+  "conclusion": xxxx,
+  "advantages": xxxx,
+  "limitations": xxxx
+  }
+  },
+  "Draft Related Work": xxxx,
+}
+
+"Target Paper" includes four key-value pairs: "title", "abstract", "introduction", and "conclusion".
+"Reference Papers" are also structured as a JSON object, including "Total citation identifiers", which is a list that contains all the citation identifiers for all referenced papers (@cite_1, ..., @cite_n). And Each identifier (@cite_1, ..., @cite_n) is also a JSON object that represents an individual reference paper. For each reference paper object "@cite_n", the meta information of the paper is provided, including "objective", "motivation", "method", "experimental result", "conclusion", "advantages", and "limitations".
+
+You need to solve this task step by step according to the following steps:
+(1) Count the number of input reference papers N by counting the items of "Total citation identifiers";
+(2) Count the number of cited reference papers M in the draft related work;
+(3) if N > M, it means the draft related work fails to cite all the input reference papers; Then you should regenerate the related work to add all the missing reference papers. Remember that you should not simply add the missing reference papers after the draft, but rather group the reference papers by topics and reorganize the content. 
+(4) if N = M, it means all the reference papers have been cited; Then you need to do nothing.
+
+
+You should only output the refined related work as well as your modification operations towards the draft. The output should also be in JSON format as follows:
+{
+ "Refined Related Work": xxxx,
+ "Modification Operations": xxxx,
+}

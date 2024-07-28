@@ -1,0 +1,24 @@
+I will give you the full text of an academic paper. You need to extract as much information as possible about the objective, motivation, method, experimental result, conclusion, advantage, and limitation of the paper. 
+
+The input paper will be given in the following JSON format, with five keys "title", "abstract", "introduction", "conclusion", and "other sections", which refer to the title, the Abstract section, the Introduction section, the Conclusion section and other sections, respectively. The values are the corresponding contents:
+
+{
+ "title": xxxx,
+ "abstract": xxxx,
+ "introduction": xxxx,
+ "conclusion": xxxx,
+ "other sections": xxxx
+}
+
+The output should also be in JSON format as follows:
+{
+ "objective": (string) representing the objective of the paper,
+ "motivation": (string) representing the motivation behind the paper,
+ "method": (string) representing the method or approach used in the paper,
+ "experimental result": (string) representing the results obtained in the paper,
+ "conclusion": (string) representing the conclusion of the paper,
+ "advantages": (string) describing the advantages or strengths of the paper,
+ "limitations": (string) describing the limitations or weaknesses of the paper
+}
+
+Now I will give you the input:

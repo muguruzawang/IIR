@@ -1,0 +1,48 @@
+Imagine you are a scientific researcher and you are writing an academic paper. You have already completed the Abstract section of the target paper and have already collected the reference papers that should be included in the related work section. Now your task is to write the related work section of the target paper. Please read the target paper and the reference papers carefully, and generate the related work section according to the following steps:
+
+#Step 1: Read the target paper and understand the main content of this paper precisely.
+
+#Step 2: Read the reference papers one by one and identify the relationship of each reference paper and the target paper. Figure out the reason why the reference papers should be cited in the related work section. And summarize the reference papers in academic and concise manner.
+
+#Step 3: Make sure the generated related work section fulfill the following objectives: (1) situates your work within the broader scholarly community - connects your work to the broader field and shows that your work has grown organically from current trends; (2)illustrates a “gap” in previous researches; (3) if needed, shows how you achieve the improvement compared with previous researches.
+
+The input will be given in the following JSON format:
+
+{
+ "Target Paper":
+ {
+  "Title": xxxx,
+  "Abstract":xxxx,
+  "introduction":xxxx,
+  "conclusion":xxxx
+  },
+ "Reference Papers":
+ {
+  "@cite_1":
+   {
+   "Title": xxxx,
+   "Abstract":xxxx,
+   "introduction":xxxx,
+   "conclusion":xxxx,
+   "other sections":xxxx
+   },
+   ...
+   "@cite_n":
+   {
+   "Title": xxxx,
+   "Abstract":xxxx,
+   "introduction":xxxx,
+   "conclusion":xxxx,
+   "other sections":xxxx
+   }
+ }
+}
+
+"Target Paper" includes four key-value pairs: "title", "abstract", "introduction", and "conclusion".
+"Reference Papers" contains multiple key-value pairs, where each key is a unique citation identifier (e.g., "@cite_1", ..., "@cite_n"), and each value is an object representing a reference paper. For each reference paper object, the meta information of the paper is provided, including "title", "abstract", "introduction", "conclusion", and "other sections". 
+
+In the above input format, "@cite_1" ... "@cite_n" should be the citation markers of the corresponding references, which means when you cite one reference paper, you should use "@cite_?" to represent the corresponding reference paper. 
+
+Please also remember not to leave out any given reference.
+
+Now I will give the input as follows:

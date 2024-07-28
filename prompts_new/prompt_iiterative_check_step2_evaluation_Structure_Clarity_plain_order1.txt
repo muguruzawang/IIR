@@ -1,0 +1,290 @@
+You are an expert paper reviewer. You need to evaluate the structure clarity of the related work draft written for a target paper and provide your operable instructions for improvements. Besides the related work, you will also be provided with information about the target paper as well as information about the reference papers it cites.  
+
+The target paper and the reference papers as well as the related work draft are given in the following JSON format:
+
+{
+ "Target Paper":
+ {
+  "title": xxxx,
+  "abstract": xxxx,
+  "introduction": xxxx,
+  "conclusion": xxxx
+ },
+ "Reference Papers":
+ {
+ "Total citation identifiers": [@cite_1, ... , @cite_n],
+ "@cite_1":
+ {
+  "objective":  xxxx,
+  "motivation":  xxxx,
+  "method":  xxxx,
+  "experimental result":  xxxx,
+  "conclusion": xxxx,
+  "advantages": xxxx,
+  "limitations": xxxx
+  },
+  ...
+  "@cite_n":
+  {
+  "objective":  xxxx,
+  "motivation":  xxxx,
+  "method":  xxxx,
+  "experimental result":  xxxx,
+  "conclusion": xxxx,
+  "advantages": xxxx,
+  "limitations": xxxx
+  }
+  },
+  "Related Work Draft":
+  {
+  "<SENTENCE_1>": xxxx,
+  "<SENTENCE_2>": xxxx,
+  "<SENTENCE_3>": xxxx,
+  ...
+  }
+}
+
+"Target Paper" includes four key-value pairs: "title", "abstract", "introduction", and "conclusion".
+"Reference Papers" are also structured as a JSON object, including "Total citation identifiers", which is a list that contains all the citation identifiers for all referenced papers (@cite_1, ..., @cite_n). And Each identifier (@cite_1, ..., @cite_n) is also a JSON object that represents an individual reference paper. For each reference paper object "@cite_n", the meta information of the paper is provided, including "objective", "motivation", "method", "experimental result", "conclusion", "advantages", and "limitations".
+"Related Work Draft" is the related work draft, in which the keys ("SENTENCE_1", ... "SENTENCE_n") represent the sentences of the draft in order. 
+
+You need to evaluate the structure clarity of the related work draft and give your instruction step by step according to the following steps:
+
+1. Read the given target paper and all the reference papers, and make note of their contents.
+
+2. Read the related work draft of the target paper.
+
+3. List the thematic flows of the related work draft, and then check if the draft is well-written and well-organized. 
+
+4. Identify whether the organization of the reference papers is fragemented and loose.
+
+5. Identify whether the draft contains abrupt transitions between sentences or themes.
+
+6. Check whether there is unreasonable discourse organization in the draft. For example, the introduction of the target paper generally comes after the discussion of reference papers, rather than before introducing the reference papers.
+ 
+You should first generate the high-level thematic flows of the draft, and then point out the unreasonable text organization using sentence keys "<SENTENCE_?>", then you should give your instructions on how to improve structure clarity.
+
+Remember when you give your instructions, you should use the following five pre-defined operations (Remove, Delete, Insert, Move_and_Modify, and Merge_and_Modify):
+
+(1) Modify the sentence <SENTENCE_?> to include information ___.
+
+(2) Delete the sentence <SENTENCE_?>.
+
+(3) Insert a new sentence about  ___ between the position of sentence <SENTENCE_n> and <SENTENCE_m>.
+
+(4) Move sentence <SENTENCE_?> before sentence <SENTENCE_n>, then slightly Modify sentence <SENTENCE_?> and <SENTENCE_n> to make them contextual coherent.
+
+(5) Merge different sub-themes ___, ___, ... ___ into a unified theme ___ by putting their sentences together, then slightly revise the sentences of the theme ___ to make them contexutal coherent and reduce fragmentation.
+
+Remember that you should only give one instruction that deals with the most prominent problem. And do not suggest delete operation on any sentence including citation identifier "@cite_n".
+
+
+The output should be in the following JSON format:
+{
+ "thematic flows":
+ {
+   "thematic name": ["<SENTENCE_?>",...,"<SENTENCE_?>"],
+   "thematic name": ["<SENTENCE_?>",...,"<SENTENCE_?>"],
+   ...
+   "thematic name": ["<SENTENCE_?>",...,"<SENTENCE_?>"]
+ },
+ "most prominent problem in text organization": xxxx,
+ "instructions": xxxx
+}
+
+"thematic flows" should be a JSON object, with several key-value pairs, where the key is themetic name and the value is the list of the corresponding draft sentences keys "<SENTENCE_?>". 
+"most prominent problem in text organization":  refers to the most prominent problem in text organization. There should be only one problem.
+"instructions": refers to the operation from the pre-defined operations, which is used to deal with the problem. 
+
+
+I will first show you an example input and output:
+
+Input:
+{
+ "Target Paper": {
+  "title": "Mimicking Word Embeddings using Subword RNNs",
+  "abstract": "Word embeddings improve generalization over lexical features by placing each word in a lower-dimensional space, using distributional information obtained from unlabeled data.  However, the effectiveness of word embeddings for downstream NLP tasks is limited by out-of-vocabulary (OOV) words, for which embeddings do not exist.  In this paper, we present MIMICK, an approach to generating OOV word embeddings compositionally, by learning a function from spellings to distributional embeddings.  Unlike prior work, MIMICK does not require re-training on the original word embedding corpus; instead, learning is performed at the type level.  Intrinsic and extrinsic evaluations demonstrate the power of this simple approach.  On 23 languages, MIMICK improves performance over a word-based baseline for tagging part-of-speech and morphosyntactic attributes.  It is competitive with (and complementary to) a supervised characterbased model in low-resource settings.",
+  "introduction": "One of the key advantages of word embeddings for natural language processing is that they enable generalization to words that are unseen in labeled training data, by embedding lexical features from large unlabeled datasets into a relatively low-dimensional Euclidean space. These low-dimensional embeddings are typically trained to capture distributional similarity, so that information can be shared among words that tend to appear in similar contexts. However, it is not possible to enumerate the entire vocabulary of any language, and even large unlabeled datasets will miss terms that appear in later applications. The issue of how to handle these out-of-vocabulary (OOV) words poses challenges for embedding-based methods. These challenges are particularly acute when working with lowresource languages, where even unlabeled data may be difficult to obtain at scale. A typical solution is to abandon hope, by assigning a single OOV embedding to all terms that do not appear in the unlabeled data. We approach this challenge from a quasigenerative perspective. Knowing nothing of a word except for its embedding and its written form, we attempt to learn the former from the latter. We train a recurrent neural network (RNN) on the character level with the embedding as the target, and use it later to predict vectors for OOV words in any downstream task. We call this model the MIMICK-RNN, for its ability to read a word’s spelling and mimick its distributional embedding. Through nearest-neighbor analysis, we show that vectors learned via this method capture both word-shape features and lexical features. As a result, we obtain reasonable near-neighbors for OOV abbreviations, names, novel compounds, and orthographic errors. Quantitative evaluation on the Stanford RareWord dataset (Luong et al., 2013) provides more evidence that these character-based embeddings capture word similarity for rare and unseen words. As an extrinsic evaluation, we conduct experiments on joint prediction of part-of-speech tags and morphosyntactic attributes for a diverse set of 23 languages, as provided in the Universal Dependencies dataset (De Marneffe et al., 2014). Our model shows significant improvement across the board against a single UNK-embedding backoff method, and obtains competitive results against a supervised character-embedding model, which is trained end-to-end on the target task. In low-resource settings, our approach is particularly effective, and is complementary to supervised character embeddings trained from labeled data. The MIMICK-RNN therefore provides a useful new tool for tagging tasks in settings where there is limited labeled data. Models and code are available at www.github.com/ yuvalpinter/mimick .",
+  "conclusion": "We present a straightforward algorithm to infer OOV word embedding vectors from pre-trained, limited-vocabulary models, without need to access the originating corpus. This method is particularly useful for low-resource languages and tasks with little labeled data available, and in fact is task-agnostic. Our method improves performance over word-based models on annotated sequence-tagging tasks for a large variety of languages across dimensions of family, orthography, and morphology. In addition, we present a Bi- LSTM approach for tagging morphosyntactic attributes at the token level. In this paper, the MIMICK model was trained using characters as input, but future work may consider the use of other subword units, such as morphemes, phonemes, or even bitmap representations of ideographic characters (Costa-juss`a et al., 2017)."
+ },
+ "Reference Papers": {
+  "Total citation identifiers": [
+   "@cite_1",
+   "@cite_2",
+   "@cite_3",
+   "@cite_4",
+   "@cite_5",
+   "@cite_6",
+   "@cite_7",
+   "@cite_8",
+   "@cite_9",
+   "@cite_10",
+   "@cite_11",
+   "@cite_12",
+   "@cite_13"
+  ],
+  "@cite_1": {
+   "objective": "To propose a novel model that is capable of building representations for morphologically complex words from their morphemes",
+   "motivation": "To address the shortcoming of existing word representations that treat each full-form word as an independent entity and fail to capture the explicit relationship among morphological variants of a word",
+   "method": "To combine recursive neural networks (RNNs) with neural language models (NLMs) to consider contextual information in learning morphologically-aware word representations",
+   "experimental result": "The learned models outperform existing word representations by a good margin on word similarity tasks across many datasets",
+   "conclusion": "The combination of RNNs and NLMs in the proposed model leads to better word representations that capture both syntactic and semantic information",
+   "advantages": "The proposed model can build representations for any new unseen word comprised of known morphemes, giving the model an infinite covered vocabulary",
+   "limitations": "The model may not improve representations for rare words that are poorly estimated, and it does not explicitly model the word structure"
+  },
+  "@cite_2": {
+   "objective": "To introduce a neural language model that utilizes only character-level inputs and to evaluate its performance compared to baseline models that use word/morpheme embeddings",
+   "motivation": "To question the necessity of word embeddings for neural language modeling and to explore the ability of character-level inputs to encode semantic and orthographic features",
+   "method": "The model employs a convolutional neural network (CNN) and a highway network over characters, whose output is given to a long short-term memory (LSTM) recurrent neural network language model (RNN-LM)",
+   "experimental result": "The model is on par with the existing state-of-the-art on the English Penn Treebank despite having 60% fewer parameters. On languages with rich morphology, the model outperforms word-level/morpheme-level LSTM baselines with fewer parameters",
+   "conclusion": "The model outperforms baseline models that use word/morpheme embeddings and is able to encode semantic and orthographic information from characters only. The results question the necessity of word embeddings for neural language modeling",
+   "advantages": "The model has fewer parameters compared to baseline models, can encode semantic and orthographic information from characters only, and is applicable to various languages",
+   "limitations": "The model requires additional convolution operations over characters, which makes it slower than word-level models. The performance of the model may decrease with larger training corpus/vocabulary sizes"
+  },
+  "@cite_3": {
+   "objective": "To present CHARAGRAM embeddings, a simple approach for learning character-based compositional models to embed textual sequences",
+   "motivation": "To address the issue of out-of-vocabulary words and to better represent rare words and morphological variants",
+   "method": "Using a character n-gram count vector followed by a single nonlinear transformation to yield a low-dimensional embedding",
+   "experimental result": "CHARAGRAM embeddings outperform more complex architectures based on character-level recurrent and convolutional neural networks, achieving new state-of-the-art performance on several similarity tasks",
+   "conclusion": "The simplest architecture converges fastest to high performance, suggesting that practitioners should begin with simple architectures rather than moving immediately to RNNs and CNNs",
+   "advantages": "CHARAGRAM embeddings can effectively represent rare words and morphological variants, and can capture differences due to spelling variation, morphology, and word choice",
+   "limitations": "The model lacks the ability to model word order or co-occurrence, and may not perform as well on tasks that require fine-grained word meaning distinctions"
+  },
+  "@cite_4": {
+   "objective": "To integrate compositional morphological representations into a vector-based probabilistic language model",
+   "motivation": "To address the challenges posed by word forms in morphologically rich languages to statistical language models",
+   "method": "To use a scalable method for integrating compositional morphological representations into a log-bilinear language model",
+   "experimental result": "The model learns morphological representations that perform well on word similarity tasks and lead to reductions in perplexity. When used for translation into morphologically rich languages, the models obtain improvements in BLEU points relative to a baseline system using back-off n-gram models",
+   "conclusion": "The method for integrating morphology into probabilistic continuous-space language models is flexible and can be used for morphologically rich languages. The morphology-guided models improve language model performance, word similarity tasks, and machine translation quality. The class decomposition enables full integration of the model into a decoder, opening up possibilities for further research",
+   "advantages": "The model learns morphological representations that perform well on word similarity tasks and lead to reductions in perplexity. It also improves machine translation quality",
+   "limitations": "The method currently enforces a single factorization per word type, sacrificing information obtainable from context-disambiguated morphological analyses. The impact of the morphology-based representations on machine translation quality is limited by the translation system's inability to generate unseen inflections"
+  },
+  "@cite_5": {
+   "objective": "To introduce a model for constructing vector representations of words by composing characters using bidirectional LSTMs",
+   "motivation": "To address the independence assumption in traditional word representation models and capture the form-function relationship in language, particularly in morphologically rich languages",
+   "method": "Using bidirectional LSTMs to read character sequences and combine them into a vector representation of the word",
+   "experimental result": "State-of-the-art results in language modeling and part-of-speech tagging, particularly in morphologically rich languages",
+   "conclusion": "Finding Function in Form: Compositional Character Models for Open Vocabulary Word Representation",
+   "advantages": "Compact model requiring fewer parameters, ability to capture non-compositional effects, improved performance in morphologically rich languages",
+   "limitations": "Computational expense of computing word representations, dependence on caching for performance improvement"
+  },
+  "@cite_6": {
+   "objective": "To propose a deep neural network that learns character-level representation of words and associate them with usual word representations to perform part-of-speech tagging",
+   "motivation": "To address the limitation of word-level representations in capturing intra-word information, which is crucial for tasks like part-of-speech tagging, especially for morphologically rich languages",
+   "method": "The proposed approach uses a deep neural network architecture called CharWNN, which combines word-level and character-level representations. The character-level representations are learned using a convolutional layer that extracts features from words of any size",
+   "experimental result": "The proposed approach achieves state-of-the-art part-of-speech tagging results for English and Portuguese, with 97.32% accuracy on the Penn Treebank WSJ corpus and 97.47% accuracy on the Mac-Morpho corpus. The error reduction on the Mac-Morpho corpus is 12.2% compared to the best previous known result",
+   "conclusion": "The proposed CharWNN architecture effectively learns character-level features for part-of-speech tagging without the need for handcrafted features. The approach can be applied to other natural language processing tasks as well",
+   "advantages": "The proposed approach avoids the use of handcrafted features, achieves state-of-the-art results, and can be applied to multiple languages",
+   "limitations": "The approach introduces additional hyperparameters that need to be tuned"
+  },
+  "@cite_7": {
+   "objective": "To automatically construct wide coverage morpho-syntactic lexicons from small seed sets using a graph-based semi-supervised learning method",
+   "motivation": "The limited availability and coverage of morpho-syntactic lexicons in different languages",
+   "method": "Graph-based semi-supervised learning method that uses morphological, syntactic, and semantic relations between words",
+   "experimental result": "Expanded a 1000 word seed lexicon to more than 100 times its size with high quality for 11 languages; improved performance in morphological tagging and dependency parsing",
+   "conclusion": "Graph-based semi-supervised method can construct large annotated morpho-syntactic lexicons that improve performance in downstream NLP tasks",
+   "advantages": "Language-independent method, wide coverage of lexicons, improved performance in morphological tagging and dependency parsing",
+   "limitations": "May not work well for languages with nonconcatenative morphology"
+  },
+  "@cite_8": {
+   "objective": "To improve word embeddings by incorporating morphological information and capturing shared sub-word features",
+   "motivation": "The long-tail nature of linguistic data makes it difficult for word embeddings to generalize to rare or unseen words. Morphologically rich languages pose additional challenges. Previous work has proposed using subword units like morphemes or characters to address these issues, but they have limitations. This paper aims to overcome these limitations by combining morphological and distributional information in a unified probabilistic framework.",
+   "method": "The paper proposes a probabilistic graphical model where word embeddings are treated as latent variables conditioned on a prior distribution based on word morphology. The model maximizes a variational approximation to the expected likelihood of an observed corpus of text, fitting variational parameters over latent binary word embeddings.",
+   "experimental result": "The proposed approach yields improvements on intrinsic word similarity evaluations and part-of-speech tagging tasks compared to baseline models.",
+   "conclusion": "The paper presents a model that unifies compositional and distributional perspectives on lexical semantics, combining morphological and distributional information to improve word embeddings. The model shows promising results in capturing word meaning and generalizing to rare and unseen words.",
+   "advantages": "The proposed model incorporates morphological information to improve word embeddings, allowing for better generalization to rare and unseen words. It also provides a way to impute embeddings for unseen words after training the model. The model outperforms baseline models on intrinsic word similarity evaluations and part-of-speech tagging tasks.",
+   "limitations": "The model relies on an unsupervised morphological segmenter, which may introduce errors in the morphological analysis. The model also makes simplifying assumptions, such as using a fully factorized mean field approximation for the variational distribution, which may limit its expressiveness. The model's performance may vary depending on the language and the quality of the morphological segmenter used."
+  },
+  "@cite_9": {
+   "objective": "To evaluate the effectiveness of different representations in bidirectional long short-term memory (biLSTM) models for part-of-speech (POS) tagging across multiple languages and under varying conditions (data size, label noise)",
+   "motivation": "To address the lack of knowledge about the reliance of biLSTM models on input representations, target languages, data set size, and label noise in the context of POS tagging",
+   "method": "The paper proposes a novel biLSTM model with an auxiliary loss function that accounts for rare words. The model is evaluated using word, character, and unicode byte embeddings for POS tagging across 22 languages. Traditional POS taggers are also compared to biLSTMs in terms of performance",
+   "experimental result": "The biLSTM model with auxiliary loss achieves state-of-the-art performance across 22 languages, particularly for morphologically complex languages. The model is less sensitive to training data size and label corruptions at small noise levels compared to previous assumptions",
+   "conclusion": "Token and subtoken-level representations are necessary for achieving state-of-the-art POS tagging. Character embeddings are particularly helpful for non-Indoeuropean and Slavic languages. The biLSTM tagger is as effective as CRF and HMM taggers with as little as 500 training sentences, but is less robust to label noise at higher noise rates",
+   "advantages": "The biLSTM model with auxiliary loss achieves state-of-the-art performance across multiple languages and is less sensitive to training data size and label corruptions. The use of character embeddings improves performance for non-Indoeuropean and Slavic languages",
+   "limitations": "The biLSTM tagger is less robust to label noise at higher noise rates compared to traditional taggers. The model requires more data than generative markovian models, but less than expected"
+  },
+  "@cite_10": {
+   "objective": "To propose a method for refining vector space representations using relational information from semantic lexicons",
+   "motivation": "To improve the quality of word vectors by incorporating semantic information from lexicons",
+   "method": "Graph-based learning technique called 'retrofitting' to use lexical relational resources to obtain higher quality semantic vectors",
+   "experimental result": "Substantial improvements in lexical semantic evaluation tasks in several languages",
+   "conclusion": "The proposed retrofitting method outperforms existing techniques for incorporating semantic lexicons into word vector training algorithms",
+   "advantages": "Modular approach that can be applied to vectors obtained from any word vector training method",
+   "limitations": "Limited evaluation on specific tasks and lexicons"
+  },
+  "@cite_11": {
+   "objective": "To describe a POS tagger for Turkish text based on a full-scale two-level specification of Turkish morphology",
+   "motivation": "To address the issue of morphological disambiguation in tagging Turkish text",
+   "method": "Using a lexicon of about 24,000 root words, a multiword and idiomatic construct recognizer, and a morphological disambiguator based on local neighborhood constraints, heuristics, and limited statistical information",
+   "experimental result": "The tagger can tag about 98-99% of the texts accurately with minimal user intervention. The LFG parser developed for Turkish generates 50% less ambiguous parses and parses almost 2.5 times faster for sentences morphologically disambiguated with the tagger.",
+   "conclusion": "Not provided in the input",
+   "advantages": "The tagger can accurately tag Turkish text with minimal user intervention. It can also be applied to any language with a proper morphological analysis interface.",
+   "limitations": "The approach does not deal satisfactorily with most aspects of word-order freeness. There is room for improvement in the mechanisms provided."
+  },
+  "@cite_12": {
+   "objective": "To address the obstacle of morphological tagging in highly inflective languages with large tagsets",
+   "motivation": "The tagset size in highly inflective languages is typically in the order of thousands, making morphological tagging challenging",
+   "method": "The method uses an exponential probabilistic model based on automatically selected features and computes the parameters using simple estimates to minimize the error rate on training data",
+   "experimental result": "The results show good performance on disambiguation of individual morphological categories and a significant improvement on the overall prediction of the combined tag compared to a HMM-based tag n-gram model",
+   "conclusion": "No conclusion provided in the input",
+   "advantages": "The method shows good performance on disambiguation of morphological categories and improves the overall prediction of the combined tag",
+   "limitations": "No limitations provided in the input"
+  },
+  "@cite_13": {
+   "objective": "To propose an improved taxonomy for capturing grammatical relations across languages using the Stanford Dependencies representation",
+   "motivation": "To enhance cross-linguistic applicability of the Stanford Dependencies representation and reconsider some of the decisions made in the original scheme",
+   "method": "To develop a two-layered taxonomy of universal grammatical relations supplemented by language-specific relations, and to map existing dependency schemes for several languages onto the new taxonomy",
+   "experimental result": "The proposed taxonomy can be applied to a variety of languages and provides a more applicable and faithful representation of grammatical relations",
+   "conclusion": "The proposed taxonomy enhances consistency in annotation between languages and facilitates cross-lingual applications",
+   "advantages": "The proposed taxonomy captures grammatical relations across languages, including morphologically rich ones, and provides a uniform analysis of prepositions and case in morphologically rich languages",
+   "limitations": "The proposed taxonomy may be harder for parsers to parse compared to the current representation, and some decisions made on linguistic grounds may not work best for processing tools"
+  }
+ },
+ "Related Work Draft": {
+  "<SENTENCE_1>": "The development of effective word representations is a cornerstone of progress in natural language processing (NLP), enabling systems to better understand and process human language by capturing semantic and syntactic nuances.",
+  "<SENTENCE_2>": "Early approaches to word representation often treated words as atomic units, ignoring the rich morphological structure that many languages exhibit.",
+  "<SENTENCE_3>": "This limitation has spurred research into more sophisticated models that can account for the internal structure of words, leading to significant improvements in various NLP tasks.",
+  "<SENTENCE_4>": "One line of research has focused on leveraging morphological information to enhance word representations.",
+  "<SENTENCE_5>": "For instance, the work by @cite_1 introduces a novel model that constructs representations for morphologically complex words from their constituent morphemes, combining recursive neural networks (RNNs) with neural language models to account for contextual information.",
+  "<SENTENCE_6>": "This approach has shown to outperform existing word representations on word similarity tasks, highlighting the importance of morphological awareness in word representation.",
+  "<SENTENCE_7>": "Similarly, @cite_4 presents a scalable method for integrating compositional morphological representations into vector-based probabilistic language models, demonstrating substantial reductions in perplexity and improvements in translation tasks for morphologically rich languages.",
+  "<SENTENCE_8>": "Another significant advancement in the field has been the adoption of character-level models, which offer a way to mitigate the out-of-vocabulary (OOV) problem by composing word representations from smaller units.",
+  "<SENTENCE_9>": "The work by @cite_2 describes a neural language model that relies solely on character-level inputs, employing a convolutional neural network (CNN) and a highway network over characters to produce word-level predictions.",
+  "<SENTENCE_10>": "This model achieves state-of-the-art performance on several languages, underscoring the sufficiency of character inputs for language modeling.",
+  "<SENTENCE_11>": "@cite_5 further explores this direction by introducing a model that constructs vector representations of words by composing characters using bidirectional LSTMs, achieving impressive results in language modeling and part-of-speech tagging, especially in morphologically rich languages.",
+  "<SENTENCE_12>": "The exploration of character n-grams as a means to represent words and sentences has also yielded promising results.",
+  "<SENTENCE_13>": "@cite_3 introduces CHARAGRAM embeddings, which represent textual sequences through character n-gram count vectors followed by a nonlinear transformation.",
+  "<SENTENCE_14>": "This simple yet effective approach surpasses more complex architectures based on character-level RNNs and CNNs, setting new benchmarks on several similarity tasks.",
+  "<SENTENCE_15>": "In addition to these developments, the field has seen efforts to enrich word embeddings with morpho-syntactic information.",
+  "<SENTENCE_16>": "@cite_7 presents a graph-based semi-supervised learning method for generating morpho-syntactic lexicons, which, when used as features, improve performance in downstream tasks like morphological tagging and dependency parsing.",
+  "<SENTENCE_17>": "@cite_8 proposes incorporating morphological information into word embeddings through a unified probabilistic framework, where morphological priors help improve embeddings for rare or unseen words.",
+  "<SENTENCE_18>": "The integration of character-level information for part-of-speech tagging has been further explored by @cite_6, which proposes a deep neural network that combines word-level and character-level representations for enhanced accuracy in English and Portuguese.",
+  "<SENTENCE_19>": "The method of refining vector space representations using relational information from semantic lexicons, as proposed by @cite_10, shows substantial improvements in lexical semantic evaluation tasks, highlighting the importance of semantic lexicons in word vector refinement.",
+  "<SENTENCE_20>": "The challenges of morphological tagging in highly inflective languages are addressed by @cite_12, which uses an exponential probabilistic model to improve disambiguation of morphological categories.",
+  "<SENTENCE_21>": "Lastly, @cite_13 proposes an improved taxonomy for capturing grammatical relations across languages, enhancing the cross-linguistic applicability of the Stanford Dependencies representation.",
+  "<SENTENCE_22>": "Our work, \\\\\\\"Mimicking Word Embeddings using Subword RNNs,\\\\\\\" builds upon these foundations by presenting MIMICK, an approach that generates OOV word embeddings compositionally from spellings to distributional embeddings without requiring re-training on the original corpus.",
+  "<SENTENCE_23>": "This method not only addresses the limitations of previous models in handling OOV words but also demonstrates the potential of type-level learning for improving performance across a wide range of languages and NLP tasks.",
+  "<SENTENCE_24>": "By situating our work within this broader context, we aim to contribute to the ongoing dialogue in the field and address some of the gaps identified in previous research"
+ }
+}
+
+Output:
+{  
+ "thematic flows": 
+ { 
+  "general introduction on topic 'effective word representations": ["<SENTENCE_1>"],
+  "limitations of early approaches to word representation": ["<SENTENCE_2>", "<SENTENCE_3>"],
+  "subtopic1: leveraging morphological information to enhance word representations.": ["<SENTENCE_4>", "<SENTENCE_5>", "<SENTENCE_6>", "<SENTENCE_7>"],
+  "subtopic2: the adoption of character-level models": ["<SENTENCE_8>", "<SENTENCE_9>", "<SENTENCE_10>", "<SENTENCE_11>"],
+  "subtopic3: The exploration of character n-grams as a means to represent words": ["<SENTENCE_12>", "<SENTENCE_13>", "<SENTENCE_14>"],
+  "subtopic4: enrich word embeddings with morpho-syntactic information.": ["<SENTENCE_15>", "<SENTENCE_16>", "<SENTENCE_17>"], 
+  "introduction of @cite_6": ["<SENTENCE_18>"],
+  "introduction of @cite_10": ["<SENTENCE_19>"],
+  "introduction of @cite_12": ["<SENTENCE_20>"],
+  "introduction of @cite_13": ["<SENTENCE_21>"],
+  "introduction of the target paper": ["<SENTENCE_22>", "<SENTENCE_23>", "<SENTENCE_24>"]
+  },
+ "most prominent problem in text organization": "the thematic organization of the related work draft is loose. Some themes can be merged into a unified one",
+ "instructions": "Merge different sub-themes 'subtopic2: the adoption of character-level models', 'subtopic3: The exploration of character n-grams as a means to represent words', and 'introduction of @cite_6' into a unified theme 'Character-level approaches in word representation' by putting their sentences together, then slightly Modify the sentences of the theme 'Character-level approaches in word representation' to make them contexutal coherent and reduce fragmentation."
+}
