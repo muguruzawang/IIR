@@ -1,26 +1,14 @@
 # Iterative Introspection based Refinement: Boosting Multi-Document Scientific Summarization with Large Language Models
 
 
-## Requirements
-* Python == 3.6.13
-* torch == 1.6.0
-* transformers == 4.18.0
-* pyrouge == 0.1.3
+## Dataset
+Our dataset ComRW is available at `dataset` folder.
 
-## Usage
-1. Create folder `trained_model`, `result` , `log` under the root directory.
+## Code
+1. The code to generate the initial draft:
 
-2. Download Multi-Xscience Dataset from [here](https://github.com/yaolu/Multi-XScience). Download TAD and TAS2 Dataset from [Paper](https://dl.acm.org/doi/abs/10.1145/3477495.3532065)
-
-3. Generate summary candidates for each instance of the datasets
-
-4. Obtain the ROUGE ranking results of these summary candidates.
-
-## Training the candidates reranker model based on the folder `candidate_reranker`
 ```bash
-export PYTHONPATH=.
-
-python train.py  --mode train --cuda  --data_dir <path-to-training-dataset-folder>  --batch_size 1 --seed 666 --train_steps 26000 --warmup_steps 4000 --save_checkpoint_steps 2000  --report_every 1  --visible_gpus 0 --gpu_ranks 0  --world_size 1 --accum_count 8 --dec_dropout 0.2 --enc_dropout 0.1  --model_path  ./trained_model/train_promptctr  --log_file ./log/train_source.txt  --inter_layers 6,7 --inter_heads 6 --dec_hidden_size 768 --hier --doc_max_timesteps 50 --use_bert true --prop 3  --num_workers 5 --lr 0.001 --enc_layers 6  --dec_layers 6 --use_nucleus_sampling false --label_smoothing 0.1 
+python t0_generate_initial_related_work_0shot.py
 ```
 
 ## Predict the ranking results of the test set
