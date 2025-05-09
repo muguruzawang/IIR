@@ -91,15 +91,14 @@ with open(path_input_text,'r',encoding='utf-8') as g_text, open(path_input_meta,
     tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo-16k")
     api_index = 0
 
-    start = 16
-    end = 30
-    line_index = [2,13,16,17,19]
-    # for line_text, line_meta, line_0sum, line_eval in zip(lines_text[start:end],lines_meta[start:end], lines_0sum[start:end], lines_eval[start:end]):
-    for line_i in line_index:
-        line_text = lines_text[line_i-1]
-        line_meta = lines_meta[line_i-1]
-        line_0sum = lines_0sum[line_i-1]
-        line_eval = lines_eval[line_i-1]
+    start = 0
+    end = 60
+    for line_text, line_meta, line_0sum, line_eval in zip(lines_text[start:end],lines_meta[start:end], lines_0sum[start:end], lines_eval[start:end]):
+    # for line_i in line_index:
+    #     line_text = lines_text[line_i-1]
+    #     line_meta = lines_meta[line_i-1]
+    #     line_0sum = lines_0sum[line_i-1]
+    #     line_eval = lines_eval[line_i-1]
 
         openai.api_key = api_list[api_index]
 

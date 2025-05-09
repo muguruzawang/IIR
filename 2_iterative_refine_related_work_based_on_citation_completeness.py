@@ -116,7 +116,7 @@ with open(path_input_text,'r',encoding='utf-8') as g_text, open(path_input_meta,
 
     out_f = open(path_w_temp_outloop,'a',encoding='utf-8')
 
-    for line_text, line_meta, line_init in zip(lines_text[10:],lines_meta[10:], lines_init[10:]):
+    for line_text, line_meta, line_init in zip(lines_text,lines_meta, lines_init):
         openai.api_key = api_list[api_index]
 
         line = json.loads(line_text)

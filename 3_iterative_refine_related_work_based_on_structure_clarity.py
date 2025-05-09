@@ -108,7 +108,7 @@ with open(path_input_text,'r',encoding='utf-8') as g_text, open(path_input_meta,
     api_index = 0
 
     start = 0
-    end = 30
+    end = 60
     for line_text, line_meta, line_0sum in zip(lines_text[start:end],lines_meta[start:end], lines_0sum[start:end]):
 
         line = json.loads(line_text)

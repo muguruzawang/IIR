@@ -62,7 +62,7 @@ with open(path_input,'r',encoding='utf-8') as g, open(path_w,'a',encoding='utf-8
     lines = g.readlines()
 
     api_index = 0
-    for line in lines[0:1]:
+    for line in lines:
         openai.api_key = api_list[api_index]
 
         line = json.loads(line)
